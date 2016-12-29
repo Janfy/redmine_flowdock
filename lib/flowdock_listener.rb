@@ -154,6 +154,12 @@ class FlowdockListener < Redmine::Hook::Listener
         if @issue.assigned_to
           @assigned_to_url = get_url(@issue.assigned_to)
         end
+        @issue.custom_field_values.each { |cf|
+          if cf.custom_field.name.downcase == "tags"
+            @tags = cf.value
+            break
+          end
+        }
       else
         raise "FlowdockListener#set_data called for unknown object #{object.inspect}"
     end
@@ -167,7 +173,7 @@ class FlowdockListener < Redmine::Hook::Listener
 
     # :project => @project_name.gsub(/[^\w\s]/,' '),
 
-    json = build_json(title, body).merge(flow_token: token)
+    json = build_json(title, body).merge(flow_token: token).merge(tags: @tags.split(',').map(&:strip))
 
     # Don't block while posting to Flowdock.
     Thread.new do
