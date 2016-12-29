@@ -1,10 +1,13 @@
 class FlowdockRenderer
   include Redmine::I18n
   include IssuesHelper
+  include CustomFieldsHelper
 
   def notes_to_html(journal)
-    if journal && journal.notes
-      "<p>#{journal.notes}</p>"
+    if journal && journal.private_notes
+      "<p>#{l(:private_note)}</p>"
+    elsif journal && journal.notes
+      textilizable(journal.notes, :headings => false)
     else
       ""
     end
@@ -19,24 +22,8 @@ class FlowdockRenderer
     end
   end
 
-  def wiki_diff_to_html(page)
-    begin
-      new_version = page.content.version
-      old_version = if new_version > 1
-        new_version - 1
-      else
-        nil
-      end
-
-      diff = page.diff(old_version, new_version)
-      "<pre>" +
-        diff.to_html.
-          gsub('class="diff_in"', 'style="background-color: #dfd"').
-          gsub('class="diff_out"', 'style="background-color: #fdd; color: #999"') +
-      "</pre>"
-    rescue => ex
-      ""
-    end
+  def description_to_html(text)
+    textilizable(text, :headings => false)
   end
 
   protected
