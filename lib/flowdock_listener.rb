@@ -45,7 +45,7 @@ class FlowdockListener < Redmine::Hook::Listener
                 })
     fields.push({
                     label: l(:field_tracker),
-                    value: "<a href=\"\">#{@tracker}</a>"
+                    value: "<a href=\"#{@tracker_url}\">#{@tracker}</a>"
                 })
     fields.push({
                     label: l(:field_priority),
@@ -54,7 +54,7 @@ class FlowdockListener < Redmine::Hook::Listener
     if @issue.assigned_to
       fields.push({
                       label: l(:field_assigned_to),
-                      value: "<a href=\"#{@issue.assigned_to}\">#{@issue.assigned_to.name}</a>"
+                      value: "<a href=\"#{@assigned_to_url}\">#{@issue.assigned_to.name}</a>"
                   })
     end
     fields.push({
@@ -124,91 +124,6 @@ class FlowdockListener < Redmine::Hook::Listener
     }
   end
 
-  def body
-    body_str = ''
-  end
-
-  def fields
-    fields = []
-    fields.push({
-                    label: 'Projet',
-                    value: "<a href=\"#{@project_url}\">#{@project.name}</a>"
-                })
-    fields.push({
-                    label: 'Tracker',
-                    value: "<a href=\"\">#{@tracker}</a>"
-                })
-    if @issue.assigned_to
-      fields.push({
-                      label: 'Assigné à',
-                      value: "<a href=\"#{get_url(@issue.assigned_to)}\">#{@issue.assigned_to.name}</a>"
-                  })
-    end
-    fields
-  end
-
-  def author
-    {
-        name: @user_name,
-        email: @user_email
-    }
-  end
-
-  # red, green, yellow, cyan, orange, grey, black, lime, purple, blue
-  def status
-    case @issue.status.id
-      when 1 then # Nouveau
-        color='lime'
-      when 2 then # En cours
-        color = 'cyan'
-      when 3 then # Résolu
-        color = 'green'
-      when 4 then # Commentaire/En attente
-        color = 'purple'
-      when 5 then # Fermé
-        color = 'grey'
-      when 6 then # Rejeté
-        color = 'red'
-      else
-        color = 'blue'
-    end
-    {
-        value: @issue.status.name,
-        color: color
-    }
-  end
-
-  def to_hash
-    {
-        author: author,
-        body: body,
-        event: event,
-        external_thread_id: "example:poll:#{@poll.id}",
-        thread: {
-            external_url: ENV['WEB_URL'] + "/#{@poll.id}",
-            fields: fields,
-            status: status,
-            title: @poll.title,
-        },
-        title: title
-    }
-  end
-
-  def build_json(event, body)
-    {
-        event: event,
-        author: author,
-        external_thread_id: @issue.id,
-        thread: {
-            title: "#{@issue.subject}",
-            external_url: @url,
-            body: body,
-            status: status,
-            fields: fields
-        }
-    }
-  end
-
   def avatar_url(email)
     id = Digest::MD5.hexdigest(email.to_s.downcase)
     "https://secure.gravatar.com/avatar/#{id}?s=120&r=pg"
@@ -233,8 +148,12 @@ class FlowdockListener < Redmine::Hook::Listener
         @project = @issue.project
         @project_url = get_url(@issue.project)
         @tracker = @issue.tracker.name
+        @tracker_url = get_url(@issue.tracker)
         @has_notes = @issue.current_journal && @issue.current_journal.notes
         @has_private_notes = @issue.current_journal && @issue.current_journal.private_notes
+        if @issue.assigned_to
+          @assigned_to_url = get_url(@issue.assigned_to)
+        end
       else
         raise "FlowdockListener#set_data called for unknown object #{object.inspect}"
     end
@@ -284,6 +203,8 @@ class FlowdockListener < Redmine::Hook::Listener
                "projects/#{object.identifier}"
              when User then
                "users/#{object.id}"
+             when Tracker then
+               return "#{@project_url}/issues?set_filter=1&tracker_id=#{object.id}"
              else
                raise "FlowdockListener#get_url called for an unknown object #{object.inspect}"
            end
