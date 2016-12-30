@@ -30,6 +30,11 @@
 <% end %>
 
 <p>
+  <% color = if @settings.empty? || @settings['color'].nil? then
+               ""
+             else
+               @settings['color']['deleted']
+             end %>
   <%= content_tag(:label, l(:status_color, :status => l(:label_deleted).capitalize)) %>
-  <%= select_tag("settings[color][deleted]", options_for_select(colors, @settings['color']['deleted'])) %>
+  <%= select_tag("settings[color][deleted]", options_for_select(colors, color)) %>
 </p>
