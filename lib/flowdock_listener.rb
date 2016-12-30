@@ -186,7 +186,7 @@ class FlowdockListener < Redmine::Hook::Listener
           @assigned_to_url = get_url(@issue.assigned_to)
         end
         @issue.custom_field_values.each { |cf|
-          if cf.custom_field.name.downcase == "tags"
+          if cf.custom_field.name.downcase == 'tags'
             @tags = cf.value
             break
           end
@@ -217,7 +217,15 @@ class FlowdockListener < Redmine::Hook::Listener
     req['Content-Type'] = 'application/json'
     req.body = json.to_json
 
-    http = Net::HTTP.new(FLOWDOCK_API_HOST, 443)
+    if ENV['http_proxy']
+      proxy_string = ENV['http_proxy']
+      proxy_uri = URI.parse(proxy_string)
+      Rails.logger.info("Using proxy from ENV['http_proxy']: #{proxy_uri}")
+      http = Net::HTTP.new(FLOWDOCK_API_HOST, 443, proxy_uri.host, proxy_uri.port, proxy_uri.user, proxy_uri.password)
+    else
+      http = Net::HTTP.new(FLOWDOCK_API_HOST, 443)
+    end
+
     http.use_ssl = true
     http.verify_mode = OpenSSL::SSL::VERIFY_NONE
 
