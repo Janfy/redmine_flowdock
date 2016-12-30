@@ -1,2 +1,9 @@
 en:
-  private_note: Private note
+  added_issue: "added an issue: %{tracker} #%{id}"
+  deleted_note: deleted note
+  deleted_private_note: deleted private note
+  modified_note: modified note
+  modified_private_note: modified private note
+  added_note: added note
+  added_private_note: added private note
+  updated_an_issue: updated an issue

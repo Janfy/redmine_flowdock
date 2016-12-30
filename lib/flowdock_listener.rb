@@ -8,7 +8,7 @@ class FlowdockListener < Redmine::Hook::Listener
     set_data(context[:issue])
     issue = context[:issue]
 
-    title = "a ajouté une demande : #{@tracker} \##{issue.id}"
+    title = l(:added_issue, :tracker => @tracker, :id => issue.id)
     body = ''
 
     send_message!(title, body)
@@ -18,13 +18,13 @@ class FlowdockListener < Redmine::Hook::Listener
     set_data(context[:issue])
 
     if @has_private_notes
-      subject = 'a ajouté une note privée'
+      subject = l(:added_private_note)
       body = @@renderer.details_to_html(context[:journal])
     elsif @has_notes
-      subject = 'a ajouté une note'
+      subject = l(:added_note)
       body = @@renderer.details_to_html(context[:journal]) + @@renderer.notes_to_html(context[:journal])
     else
-      subject = 'a mis à jour la demande'
+      subject = l(:updated_an_issue)
       body = @@renderer.details_to_html(context[:journal])
     end
 
@@ -49,12 +49,12 @@ class FlowdockListener < Redmine::Hook::Listener
     set_data(journal.issue)
 
     if journal.notes.blank?
-      subject = (journal.private_notes?) ? 'a supprimé une note privée' : 'a supprimé une note'
+      subject = (journal.private_notes?) ? l(:deleted_private_note) : l(:deleted_note)
     else
       if journal.private_notes?
-        subject = 'a modifié une note privée'
+        subject = l(:modified_private_note)
       else
-        subject = 'a modifié une note'
+        subject = l(:modified_note)
         body = @@renderer.notes_to_html(journal)
       end
     end
@@ -259,8 +259,6 @@ class FlowdockListener < Redmine::Hook::Listener
     path = case object
              when Issue then
                "issues/#{object.id}"
-             when WikiPage then
-               "projects/#{object.wiki.project.identifier}/wiki/#{object.title}"
              when Project then
                "projects/#{object.identifier}"
              when User then

@@ -1,3 +1,10 @@
 fr:
-  private_note: Note privée
+  added_issue: "a ajouté une demande : %{tracker} #%{id}"
+  deleted_note: a supprimé une note
+  deleted_private_note: a supprimé une note privée
+  modified_note: a modifié une note
+  modified_private_note: a modifié une note privée
+  added_note: a ajouté une note
+  added_private_note: a ajouté une note privée
+  updated_an_issue: a mis à jour la demande
 

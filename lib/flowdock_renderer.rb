@@ -5,7 +5,7 @@ class FlowdockRenderer
 
   def notes_to_html(journal)
     if journal && journal.private_notes
-      "<p>#{l(:private_note)}</p>"
+      ""
     elsif journal && journal.notes
       textilizable(journal.notes, :headings => false)
     else
