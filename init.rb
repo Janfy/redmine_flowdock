@@ -15,8 +15,21 @@ Redmine::Plugin.register :redmine_flowdock do
 
   end
 
+  default_settings = {
+      :api_token => {},
+      :color => {
+          '1' => 'lime',
+          '2' => 'blue',
+          '3' => 'green',
+          '4' => 'orange',
+          '5' => 'grey',
+          '6' => 'black',
+          :deleted => 'red'
+      }
+  }
+
+  default_settings = ActionController::Parameters.new(default_settings)
+
   settings :partial => 'settings/redmine_flowdock',
-    :default => {
-      :api_token => {}
-    }
+           :default => default_settings
 end
