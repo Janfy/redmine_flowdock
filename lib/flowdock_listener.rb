@@ -31,6 +31,10 @@ class FlowdockListener < Redmine::Hook::Listener
     send_message!(subject, body)
   end
 
+  def controller_issues_bulk_edit_before_save(context = {})
+    controller_issues_edit_after_save(context)
+  end
+
   def controller_issues_before_delete(context = {})
 
     context[:issues].each { |issue|
