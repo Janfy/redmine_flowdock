@@ -122,22 +122,7 @@ class FlowdockListener < Redmine::Hook::Listener
   # red, green, yellow, cyan, orange, grey, black, lime, purple, blue
   def status
     if @issue_deleted == false
-      case @issue.status.id
-        when 1 then # Nouveau
-          color='lime'
-        when 2 then # En cours
-          color = 'cyan'
-        when 3 then # Résolu
-          color = 'green'
-        when 4 then # Commentaire/En attente
-          color = 'purple'
-        when 5 then # Fermé
-          color = 'grey'
-        when 6 then # Rejeté
-          color = 'red'
-        else
-          color = 'blue'
-      end
+      color=status_color(@issue.status)
       {
           value: @issue.status.name,
           color: color
@@ -145,7 +130,7 @@ class FlowdockListener < Redmine::Hook::Listener
     else
       {
           value: l(:label_deleted).capitalize,
-          color: 'red'
+          color: status_color('deleted')
       }
     end
   end
@@ -182,6 +167,19 @@ class FlowdockListener < Redmine::Hook::Listener
     token = Setting.plugin_redmine_flowdock[:api_token][@project.identifier]
     token = nil if token == ''
     token
+  end
+
+  def status_color(status)
+    case status
+      when IssueStatus then
+        color = Setting.plugin_redmine_flowdock[:color][status.id.to_s]
+        color = 'grey' if color == ''
+        color
+      else
+        color = Setting.plugin_redmine_flowdock[:color][status]
+        color = 'grey' if color == ''
+        color
+    end
   end
 
   def set_data(object)

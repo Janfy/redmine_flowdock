@@ -1,9 +1,35 @@
-<p>Get your Flowdock API tokens from the <a href="https://www.flowdock.com/help/redmine" target="_blank">help page</a>. The tokens are specific to a single Flowdock flow. You can send updates to multiple flows by adding multiple tokens that are separated with a comma.</p>
+<p>Get your Flowdock API tokens from the <a href="https://www.flowdock.com/help/redmine" target="_blank">help page</a>.
+  The tokens are specific to a single Flowdock flow.</p>
 
 <% Project.active.each do |project| %>
-  <% token = if @settings.empty? || @settings['api_token'].nil? then "" else @settings['api_token'][project.identifier] end %>
-<p>
-  <%= content_tag(:label, project.name) %>
-  <%= text_field_tag("settings[api_token][#{project.identifier}]", token) %>
-</p>
+    <% token = if @settings.empty? || @settings['api_token'].nil? then
+                 ""
+               else
+                 @settings['api_token'][project.identifier]
+               end %>
+    <p>
+      <%= content_tag(:label, project.name) %>
+      <%= text_field_tag("settings[api_token][#{project.identifier}]", token) %>
+    </p>
 <% end %>
+
+<% colors = ['red', 'green', 'yellow', 'cyan', 'orange', 'grey', 'black', 'lime', 'purple', 'blue'] %>
+
+<hr>
+
+<% IssueStatus.sorted.each do |status| %>
+    <% color = if @settings.empty? || @settings['color'].nil? then
+                 ""
+               else
+                 @settings['color'][status.id.to_s]
+               end %>
+    <p>
+      <%= content_tag(:label, l(:status_color, :status => status)) %>
+      <%= select_tag("settings[color][#{status.id}]", options_for_select(colors, color)) %>
+    </p>
+<% end %>
+
+<p>
+  <%= content_tag(:label, l(:status_color, :status => l(:label_deleted).capitalize)) %>
+  <%= select_tag("settings[color][deleted]", options_for_select(colors, @settings['color']['deleted'])) %>
+</p>

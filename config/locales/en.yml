@@ -7,3 +7,4 @@ en:
   added_note: added note
   added_private_note: added private note
   updated_an_issue: updated an issue
+  status_color: "'%{status}' color status"
