@@ -36,13 +36,30 @@ class FlowdockListener < Redmine::Hook::Listener
   end
 
   def controller_issues_before_delete(context = {})
-
     context[:issues].each { |issue|
       set_data(issue)
       @issue_deleted = true
 
       send_message!('a supprimé une demande', '')
     }
+  end
+
+  def controller_journals_edit_post(context = {})
+    journal = context[:journal]
+    set_data(journal.issue)
+
+    if journal.notes.blank?
+      subject = (journal.private_notes?) ? 'a supprimé une note privée' : 'a supprimé une note'
+    else
+      if journal.private_notes?
+        subject = 'a modifié une note privée'
+      else
+        subject = 'a modifié une note'
+        body = @@renderer.notes_to_html(journal)
+      end
+    end
+
+    send_message!(subject, body)
   end
 
   protected
