@@ -31,14 +31,33 @@ class FlowdockListener < Redmine::Hook::Listener
     send_message!(subject, body)
   end
 
+  def controller_issues_before_delete(context = {})
+
+    context[:issues].each { |issue|
+      set_data(issue)
+      @issue_deleted = true
+
+      send_message!('a supprimé une demande', '')
+    }
+  end
+
   protected
 
   def fields
     fields = []
-    fields.push({
-                    label: l(:field_status),
-                    value: @issue.status.name
-                })
+
+    if @issue_deleted == false
+      fields.push({
+                      label: l(:field_status),
+                      value: @issue.status.name
+                  })
+    else
+      fields.push({
+                      label: l(:field_status),
+                      value: l(:label_deleted).capitalize
+                  })
+    end
+
     fields.push({
                     label: l(:field_project),
                     value: "<a href=\"#{@project_url}\">#{@project.name}</a>"
@@ -81,26 +100,33 @@ class FlowdockListener < Redmine::Hook::Listener
 
   # red, green, yellow, cyan, orange, grey, black, lime, purple, blue
   def status
-    case @issue.status.id
-      when 1 then # Nouveau
-        color='lime'
-      when 2 then # En cours
-        color = 'cyan'
-      when 3 then # Résolu
-        color = 'green'
-      when 4 then # Commentaire/En attente
-        color = 'purple'
-      when 5 then # Fermé
-        color = 'grey'
-      when 6 then # Rejeté
-        color = 'red'
-      else
-        color = 'blue'
+    if @issue_deleted == false
+      case @issue.status.id
+        when 1 then # Nouveau
+          color='lime'
+        when 2 then # En cours
+          color = 'cyan'
+        when 3 then # Résolu
+          color = 'green'
+        when 4 then # Commentaire/En attente
+          color = 'purple'
+        when 5 then # Fermé
+          color = 'grey'
+        when 6 then # Rejeté
+          color = 'red'
+        else
+          color = 'blue'
+      end
+      {
+          value: @issue.status.name,
+          color: color
+      }
+    else
+      {
+          value: l(:label_deleted).capitalize,
+          color: 'red'
+      }
     end
-    {
-        value: @issue.status.name,
-        color: color
-    }
   end
 
   def issue_id
@@ -116,7 +142,7 @@ class FlowdockListener < Redmine::Hook::Listener
         external_thread_id: issue_id,
         thread: {
             title: "#{@issue.subject}",
-            external_url: @url,
+            external_url: @issue_deleted == true ? '' : @url,
             body: @@renderer.description_to_html(@issue.description),
             status: status,
             fields: fields
@@ -141,6 +167,7 @@ class FlowdockListener < Redmine::Hook::Listener
     @user_name = User.current.name
     @user_email = User.current.mail
     @url = get_url(object)
+    @issue_deleted = false
 
     case object
       when Issue then
@@ -217,4 +244,5 @@ class FlowdockListener < Redmine::Hook::Listener
 
     "#{Setting[:protocol]}://#{Setting[:host_name]}/#{path}"
   end
+
 end
