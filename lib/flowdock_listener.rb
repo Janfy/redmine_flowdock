@@ -217,9 +217,11 @@ class FlowdockListener < Redmine::Hook::Listener
     token = api_token
     return unless token
 
-    # :project => @project_name.gsub(/[^\w\s]/,' '),
-
-    json = build_json(title, body).merge(flow_token: token).merge(tags: @tags.split(',').map(&:strip))
+    if @tags
+      json = build_json(title, body).merge(flow_token: token).merge(tags: @tags.split(',').map(&:strip))
+    else
+      json = build_json(title, body).merge(flow_token: token)
+    end
 
     # Don't block while posting to Flowdock.
     Thread.new do
