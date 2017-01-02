@@ -8,3 +8,4 @@ en:
   added_private_note: added private note
   updated_an_issue: updated an issue
   status_color: "'%{status}' color status"
+  deleted_issue: deleted an issue

@@ -40,7 +40,7 @@ class FlowdockListener < Redmine::Hook::Listener
       set_data(issue)
       @issue_deleted = true
 
-      send_message!('a supprimé une demande', '')
+      send_message!(l(:deleted_issue), '')
     }
   end
 

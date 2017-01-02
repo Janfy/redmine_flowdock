@@ -8,4 +8,4 @@ fr:
   added_private_note: a ajouté une note privée
   updated_an_issue: a mis à jour la demande
   status_color: "Couleur du statut '%{status}'"
-
+  deleted_issue: a supprimé une demande
