@@ -173,7 +173,7 @@ class FlowdockListener < Redmine::Hook::Listener
     case status
       when IssueStatus then
         color = Setting.plugin_redmine_flowdock[:color][status.id.to_s]
-        color = 'grey' if color == ''
+        color = 'grey' if color == nil
         color
       else
         color = Setting.plugin_redmine_flowdock[:color][status]
