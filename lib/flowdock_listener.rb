@@ -1,5 +1,4 @@
 class FlowdockListener < Redmine::Hook::Listener
-  INTEGRATION_SOURCE = 'Redmine'
   FLOWDOCK_API_HOST = 'api.flowdock.com'
 
   @@renderer = FlowdockRenderer.new

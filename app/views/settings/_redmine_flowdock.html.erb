@@ -1,6 +1,3 @@
-<p>Get your Flowdock API tokens from the <a href="https://www.flowdock.com/help/redmine" target="_blank">help page</a>.
-  The tokens are specific to a single Flowdock flow.</p>
-
 <% Project.active.each do |project| %>
     <% token = if @settings.empty? || @settings['api_token'].nil? then
                  ""
