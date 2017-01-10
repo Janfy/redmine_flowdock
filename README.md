@@ -29,3 +29,21 @@ Generate API token
 1. Fill the form and click **Create source**
 1. Go back to Redmine, go to **Administration** -> **Plugins** and choose **Configure** next to the Flowdock plugin.
 1. Enter the **Flowdock API token** generated on step 3 next to the projects you want to stream to Flowdock.
+
+Proxy settings
+--------------
+
+Corporate proxy, with or without authentication, can be use in order to send messages to the Flowdock API.  
+Simply export the `http_proxy` environment variable before starting your Redmine instance.
+
+Example:
+
+```shell
+# Without authentication
+export http_proxy=http://proxyserver:proxyport
+./start_redmine.sh
+
+# With authentication
+export http_proxy=http://user:password@proxyserver:proxyport
+./start_redmine.sh
+```
