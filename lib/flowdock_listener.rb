@@ -10,6 +10,8 @@ class FlowdockListener < Redmine::Hook::Listener
     title = l(:added_issue, :tracker => @tracker, :id => issue.id)
     body = ''
 
+    @tags = @@renderer.extract_hashtags(@issue.description)
+
     send_message!(title, body)
   end
 
@@ -22,9 +24,11 @@ class FlowdockListener < Redmine::Hook::Listener
     elsif @has_notes != ""
       subject = l(:added_note)
       body = @@renderer.details_to_html(context[:journal]) + @@renderer.notes_to_html(context[:journal])
+      @tags = @@renderer.extract_hashtags(body)
     else
       subject = l(:updated_an_issue)
       body = @@renderer.details_to_html(context[:journal])
+      @tags = @@renderer.extract_hashtags(body)
     end
 
     send_message!(subject, body)
@@ -199,12 +203,6 @@ class FlowdockListener < Redmine::Hook::Listener
         if @issue.assigned_to
           @assigned_to_url = get_url(@issue.assigned_to)
         end
-        @issue.custom_field_values.each { |cf|
-          if cf.custom_field.name.downcase == 'tags'
-            @tags = cf.value
-            break
-          end
-        }
       else
         raise "FlowdockListener#set_data called for unknown object #{object.inspect}"
     end

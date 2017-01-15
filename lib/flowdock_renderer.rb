@@ -26,6 +26,10 @@ class FlowdockRenderer
     textilizable(text, :headings => false)
   end
 
+  def extract_hashtags(text)
+    text.scan(/\B#\w+/).flatten.join(',')
+  end
+
   protected
 
   def journal_details(details)
