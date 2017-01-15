@@ -19,7 +19,7 @@ class FlowdockListener < Redmine::Hook::Listener
     if @has_private_notes
       subject = l(:added_private_note)
       body = @@renderer.details_to_html(context[:journal])
-    elsif @has_notes
+    elsif @has_notes != ""
       subject = l(:added_note)
       body = @@renderer.details_to_html(context[:journal]) + @@renderer.notes_to_html(context[:journal])
     else
